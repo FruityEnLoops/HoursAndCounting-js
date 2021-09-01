@@ -1,0 +1,28 @@
+{
+  "name": "hoursandcounting",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FruityEnLoops/HoursAndCounting-js.git"
+  },
+  "keywords": [
+    "iCal",
+    "discord",
+    "bot"
+  ],
+  "author": "FruityEnLoops",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FruityEnLoops/HoursAndCounting-js/issues"
+  },
+  "homepage": "https://github.com/FruityEnLoops/HoursAndCounting-js#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "node-ical": "^0.13.0"
+  }
+}
