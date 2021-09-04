@@ -7,9 +7,14 @@ module.exports = {
 	description: 'Get the current day\'s timetable for your or a specified group.',
 	execute(message) {
         // TODO : read args for date / specific calendar
-        // 
-        // TODO : Search for calendar url based on roles 
-        // let url = getCalUrlFromRoles(message.member.roles);
+        // let date = processArgsForDate(message);
+        // otherwise use today
+        // let date = new Date();
+        //
+        // TODO : Search for calendar based on message if applicable
+        // let calendar = processArgsForCalendar(message);
+        // TODO : Search for calendar based on roles 
+        // let calendar = getCalUrlFromRoles(message.member.roles);
 		printIcal(message, calendars[0], new Date("2021-09-03"));
 	},
 };
@@ -19,7 +24,6 @@ function printIcal(message, calendar, date){
         .setTitle(date.toDateString() + " - " + calendar.alias)
         .setAuthor("HoursAndCounting");
     ical.async.fromURL(calendar.url, {}, function (err, data) {
-        console.log(data);
         for(let element in data){
             if(data[element].type == 'VEVENT'){
                 if(sameDay(new Date(data[element].start), date)) {
