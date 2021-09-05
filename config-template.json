@@ -1,4 +1,6 @@
 {
 	"prefix": "!",
+	"goodColor": "#36405e",
+	"errorColor": "#ff0000",
 	"token": "here goes your token!"
 }
