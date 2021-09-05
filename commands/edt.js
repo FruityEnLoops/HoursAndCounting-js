@@ -41,7 +41,9 @@ module.exports = {
                     break;
             }
             
-            calendar = searchForCalendarInArg(arg);
+            if(cal == null) {
+                cal = searchForCalendarInArg(arg);
+            }            
         }
 
         if(date == null) {
