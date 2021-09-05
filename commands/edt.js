@@ -61,20 +61,40 @@ module.exports = {
 
 function printIcal(message, calendar, date){
     const response = new Discord.MessageEmbed()
-        .setTitle(date.toDateString() + " - " + calendar.alias)
-        .setAuthor("HoursAndCounting");
+        .setTitle(date.toLocaleDateString('fr-FR') + " - " + calendar.name)
+        .setColor('#00ff00');
     ical.async.fromURL(calendar.url, {}, function (err, data) {
+        let todaysEvents = [];
         for(let element in data){
             if(data[element].type == 'VEVENT'){
                 if(sameDay(new Date(data[element].start), date)) {
-                    let startTime = new Date(data[element].start);
-                    let endTime = new Date(data[element].end);
-                    response.addField(
-                        data[element].description.val,
-                        startTime.getHours() + "h" + startTime.getMinutes() + " -> " + endTime.getHours() + "h" + endTime.getMinutes()
-                    );
+                    todaysEvents.push(data[element]);
                 }
             }
+        }
+
+        if(todaysEvents.length == 0) {
+            response.addField(`Pas de cours aujourd'hui`, `~~bon chômage~~`);
+            response.setColor('#ff0000')
+            message.channel.send(response);
+            return;
+        }
+
+        todaysEvents.sort(function(a, b) {
+            let dateA = new Date(a.start);
+            let dateB = new Date(b.start);
+            if(dateA < dateB) return -1;
+            if(dateA > dateB) return 1;
+            return 0;
+        });
+        
+        for(let e of todaysEvents) {
+            let startTime = new Date(e.start);
+            let endTime = new Date(e.end);
+            response.addField(
+                e.description.val,
+                startTime.getHours() + "h" + pad(startTime.getMinutes(), 2) + " -> " + endTime.getHours() + "h" + pad(endTime.getMinutes(), 2)
+            );
         }
         message.channel.send(response);
     });
@@ -111,4 +131,10 @@ function getNextDayOfWeek(date, dayOfWeek) {
     var resultDate = new Date(date.getTime());
     resultDate.setDate(date.getDate() + (7 + dayOfWeek - date.getDay()) % 7);
     return resultDate;
+}
+
+function pad(num, size) {
+    num = num.toString();
+    while (num.length < size) num = "0" + num;
+    return num;
 }
