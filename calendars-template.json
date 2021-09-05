@@ -1,5 +1,5 @@
 {
-    "alias": "calendar alias",
+    "alias": ["calendar", "aliases"],
     "url": "calendar url",
     "name": "proper calendar full name"
 }
