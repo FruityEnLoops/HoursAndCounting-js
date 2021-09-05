@@ -1,8 +1,8 @@
 [
     {
-    "alias": ["calendar", "aliases"],
-    "url": "calendar url",
-    "name": "proper calendar full name"
+        "alias": ["calendar", "aliases"],
+        "url": "calendar url",
+        "name": "proper calendar full name"
     },
     {
         "alias": ["another", "one"],
