@@ -1,6 +1,7 @@
 const ical = require('node-ical');
 const calendars = require('../calendars.json');
 const Discord = require('discord.js');
+const { goodColor, errorColor } = require('../config.json');
 
 module.exports = {
 	name: 'edt',
@@ -64,7 +65,7 @@ module.exports = {
 function printIcal(message, calendar, date){
     const response = new Discord.MessageEmbed()
         .setTitle(date.toLocaleDateString('fr-FR') + " - " + calendar.name)
-        .setColor('#00ff00');
+        .setColor(goodColor);
     ical.async.fromURL(calendar.url, {}, function (err, data) {
         let todaysEvents = [];
         for(let element in data){
@@ -77,7 +78,7 @@ function printIcal(message, calendar, date){
 
         if(todaysEvents.length == 0) {
             response.addField(`Pas de cours aujourd'hui`, `~~bon chômage~~`);
-            response.setColor('#ff0000')
+            response.setColor(errorColor)
             message.channel.send(response);
             return;
         }
