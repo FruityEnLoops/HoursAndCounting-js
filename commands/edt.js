@@ -52,9 +52,10 @@ module.exports = {
         }
 
         if(cal == null) {
-            cal = getCalendarFromRoles(message.member); // if no calendar was specified during args parsing, try to find one in the user's roles
+            if(message.member != null)
+                cal = getCalendarFromRoles(message.member); // if no calendar was specified during args parsing, try to find one in the user's roles
             if(cal == null) {
-                message.channel.send('error : no suitable arguments or role found');
+                message.channel.send(`error : couldn't find which calendar to display (did you specify it / do you have the right roles?)`);
                 return;
             }
         }
