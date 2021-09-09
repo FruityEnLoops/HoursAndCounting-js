@@ -67,6 +67,7 @@ function printIcal(message, calendar, date){
     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const response = new Discord.MessageEmbed()
         .setTitle(date.toLocaleDateString('fr-FR', options) + " - " + calendar.name)
+        .setFooter('Requested by @' + message.author.username, message.author.avatarURL())
         .setColor(goodColor);
     ical.async.fromURL(calendar.url, {}, function (err, data) {
         let todaysEvents = [];
