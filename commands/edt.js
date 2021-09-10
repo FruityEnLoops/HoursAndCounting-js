@@ -1,16 +1,16 @@
 const ical = require('node-ical');
-const calendars = require('../calendars.json');
 const Discord = require('discord.js');
-const { goodColor, errorColor } = require('../config.json');
+const { goodColor, errorColor, DATE_FORMAT_OPTIONS } = require('../config.json');
+const { sameDay, searchForCalendarByArg, getNextDayOfWeek, pad } = require("./../helpers")
 
 module.exports = {
-	name: 'edt',
-	description: 'Get the specified day\'s timetable for your or a specified group.',
-	execute(message, args) {
+    name: 'edt',
+    description: 'Get the specified day\'s timetable for your or a specified group.',
+    execute(message, args) {
         let date;
         let cal;
-        
-        for(let arg of args){
+
+        for (let arg of args) {
             arg = arg.toLowerCase();
 
             // TODO : clean this messy switch
@@ -41,29 +41,29 @@ module.exports = {
                     date = getNextDayOfWeek(new Date(), 7);
                     break;
             }
-            
-            if(cal == null) {
-                cal = searchForCalendarInArg(arg);
-            }            
+
+            if (cal == null) {
+                cal = searchForCalendarByArg(arg);
+            }
         }
 
-        if(date == null) {
+        if (date == null) {
             date = new Date(); // if date has not been defined by user, use today as default
         }
 
-        if(cal == null) {
-            if(message.member != null)
+        if (cal == null) {
+            if (message.member != null)
                 cal = getCalendarFromRoles(message.member); // if no calendar was specified during args parsing, try to find one in the user's roles
-            if(cal == null) {
+            if (cal == null) {
                 message.channel.send(`error : couldn't find which calendar to display (did you specify it / do you have the right roles?)`);
                 return;
             }
         }
-		printIcal(message, cal, date);
-	},
+        printIcal(message, cal, date);
+    },
 };
 
-function printIcal(message, calendar, date){
+function printIcal(message, calendar, date) {
     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const response = new Discord.MessageEmbed()
         .setTitle(date.toLocaleDateString('fr-FR', options) + " - " + calendar.name)
@@ -71,30 +71,30 @@ function printIcal(message, calendar, date){
         .setColor(goodColor);
     ical.async.fromURL(calendar.url, {}, function (err, data) {
         let todaysEvents = [];
-        for(let element in data){
-            if(data[element].type == 'VEVENT'){
-                if(sameDay(new Date(data[element].start), date)) {
+        for (let element in data) {
+            if (data[element].type == 'VEVENT') {
+                if (sameDay(new Date(data[element].start), date)) {
                     todaysEvents.push(data[element]);
                 }
             }
         }
 
-        if(todaysEvents.length == 0) {
+        if (todaysEvents.length == 0) {
             response.addField(`Pas de cours aujourd'hui`, `~~bon chômage~~`);
             response.setColor(errorColor)
             message.channel.send(response);
             return;
         }
 
-        todaysEvents.sort(function(a, b) {
+        todaysEvents.sort(function (a, b) {
             let dateA = new Date(a.start);
             let dateB = new Date(b.start);
-            if(dateA < dateB) return -1;
-            if(dateA > dateB) return 1;
+            if (dateA < dateB) return -1;
+            if (dateA > dateB) return 1;
             return 0;
         });
-        
-        for(let e of todaysEvents) {
+
+        for (let e of todaysEvents) {
             let startTime = new Date(e.start);
             let endTime = new Date(e.end);
             response.addField(
@@ -106,41 +106,4 @@ function printIcal(message, calendar, date){
     });
 }
 
-function searchForCalendarInArg(arg) {
-    for(let calendar of calendars) {
-        for(let alias of calendar.alias) {
-            if(alias.toLowerCase() == arg) {
-                return calendar;
-            }
-        }
-    }
-}
 
-function getCalendarFromRoles(member) {
-    for(let calendar of calendars) {
-        for(let alias of calendar.alias) {
-            if(member.roles.cache.some(role => role.name.toLowerCase() === alias.toLowerCase())) {
-                return calendar;
-            }
-        }
-    }
-}
-
-// https://stackoverflow.com/a/43855221
-function sameDay(d1, d2) {
-    return d1.getFullYear() === d2.getFullYear() &&
-      d1.getMonth() === d2.getMonth() &&
-      d1.getDate() === d2.getDate();
-}
-
-function getNextDayOfWeek(date, dayOfWeek) {
-    var resultDate = new Date(date.getTime());
-    resultDate.setDate(date.getDate() + (7 + dayOfWeek - date.getDay()) % 7);
-    return resultDate;
-}
-
-function pad(num, size) {
-    num = num.toString();
-    while (num.length < size) num = "0" + num;
-    return num;
-}
