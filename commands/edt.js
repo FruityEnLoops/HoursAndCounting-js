@@ -70,6 +70,12 @@ function printIcal(message, calendar, date){
         .setFooter('Requested by @' + message.author.username, message.author.avatarURL())
         .setColor(goodColor);
     ical.async.fromURL(calendar.url, {}, function (err, data) {
+        if(err){
+            response.setColor(errorColor);
+            response.addField("Erreur dans la récupération de l'emploi du temps", "Timeout");
+            message.channel.send(response);
+            return;
+        }
         let todaysEvents = [];
         for(let element in data){
             if(data[element].type == 'VEVENT'){
